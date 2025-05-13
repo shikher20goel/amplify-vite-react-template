@@ -18,15 +18,24 @@ function App() {
   }
 
   return (
-    <main>
-      <h1>My todos</h1>
-      <button onClick={createTodo}>+ new</button>
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
-        ))}
-      </ul>
-      <div>
+    <main style={{ display: 'flex', justifyContent: 'space-between', padding: '20px' }}>
+      {/* Panel 1: Todo List */}
+      <div style={{ width: '30%', padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
+        <h1>My todos</h1>
+        <ul>
+          {todos.map((todo) => (
+            <li key={todo.id}>{todo.content}</li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Panel 2: Create Todo Button */}
+      <div style={{ width: '30%', padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
+        <button onClick={createTodo}>+ new</button>
+      </div>
+
+      {/* Panel 3: Additional Info */}
+      <div style={{ width: '30%', padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
         🥳 App successfully hosted. Try creating a new todo.
         <br />
         <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
