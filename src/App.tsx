@@ -1,29 +1,35 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import "./App.css";
 
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
+type Role = "user" | "assistant";
+interface Message {
+  role: Role;
+  content: string;
+}
+
 const synth = window.speechSynthesis;
+const SpeechRecognition =
+  (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
 function App() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
-  const recognitionRef = useRef(null);
+  const recognitionRef = useRef<any>(null);
 
-  const speakText = (text) => {
+  const speakText = (text: string) => {
     if (!synth) return;
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US"; // You can customize the voice and lang
+    utterance.lang = "en-US";
     synth.speak(utterance);
   };
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const newMessages = [...messages, { role: "user", content: input }];
+    const newMessages: Message[] = [...messages, { role: "user", content: input }];
     setMessages(newMessages);
     setInput("");
     setLoading(true);
@@ -46,8 +52,9 @@ function App() {
       const reply = response.data.choices[0].message;
       setMessages([...newMessages, reply]);
       speakText(reply.content);
-    } catch (err) {
-      alert("Error: " + err.message);
+    } catch (err: unknown) {
+      console.error(err);
+      alert("Error occurred while calling OpenAI API");
     } finally {
       setLoading(false);
     }
@@ -55,7 +62,7 @@ function App() {
 
   const startListening = () => {
     if (!SpeechRecognition) {
-      alert("Speech recognition not supported in this browser.");
+      alert("Speech recognition not supported.");
       return;
     }
 
@@ -67,7 +74,7 @@ function App() {
     recognitionRef.current.onstart = () => setListening(true);
     recognitionRef.current.onend = () => setListening(false);
 
-    recognitionRef.current.onresult = (event) => {
+    recognitionRef.current.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       setInput((prev) => prev + transcript);
     };
@@ -87,14 +94,11 @@ function App() {
       <h1>ChatGPT Voice App</h1>
       <div className="chat-box">
         {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={msg.role === "user" ? "message user" : "message bot"}
-          >
+          <div key={i} className={`message ${msg.role}`}>
             <strong>{msg.role === "user" ? "You" : "GPT"}:</strong> {msg.content}
           </div>
         ))}
-        {loading && <p className="loading">GPT is typing...</p>}
+        {loading && <p>GPT is typing...</p>}
       </div>
       <div className="input-box">
         <input
@@ -106,14 +110,12 @@ function App() {
         <button
           onClick={listening ? stopListening : startListening}
           style={{
-            background: listening ? "red" : "green",
+            backgroundColor: listening ? "red" : "green",
             color: "white",
-            border: "none",
-            borderRadius: "5px",
-            padding: "10px 16px",
+            marginLeft: "8px",
           }}
         >
-          🎙️ {listening ? "Stop" : "Talk"}
+          🎙 {listening ? "Stop" : "Talk"}
         </button>
       </div>
     </div>
