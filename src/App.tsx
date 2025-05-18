@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import axios from "axios";
+// @ts-ignore
+const axios = window.axios;
 import "./App.css";
 
 type Role = "user" | "assistant";
@@ -43,7 +44,7 @@ function App() {
         },
         {
           headers: {
-            Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+            Authorization: `Bearer YOUR_OPENAI_API_KEY_HERE`, // Replace with your OpenAI API key
             "Content-Type": "application/json",
           },
         }
@@ -91,7 +92,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>ChatGPT Voice App</h1>
+      <h1>Shikher Voice App 1</h1>
       <div className="chat-box">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.role}`}>
